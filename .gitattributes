@@ -1,0 +1,40 @@
+# ──────────────────────────────────────────────────────
+# Recon Engine — Global .gitattributes (place at root)
+# Ensures cross-OS consistency and readable diffs
+# ──────────────────────────────────────────────────────
+
+# Treat all text files as UTF-8 and enforce LF line endings
+* text=auto eol=lf
+
+# Specific handling for source code files (Java, XML, configs)
+*.java    text diff=java
+*.xml     text
+*.yml     text
+*.yaml    text
+*.properties text
+*.md      text
+*.json    text
+
+# Scripts: treat as text (enforce LF)
+*.sh      text eol=lf
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+# Prevent binary file corruption
+*.jar     binary
+*.war     binary
+*.ear     binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.ico     binary
+*.pdf     binary
+
+# Handle Git ignore and attributes files themselves
+.gitattributes text
+.gitignore     text
+
+# ──────────────────────────────────────────────────────
+# Add more as your stack grows (frontend, SQL, etc.)
+# ──────────────────────────────────────────────────────

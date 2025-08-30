@@ -1,0 +1,86 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- === Project Descriptor === -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.gracemann.recon</groupId>
+    <artifactId>recon-engine</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Recon Engine</name>
+    <description>Multi-module microservices for financial transaction reconciliation and reporting</description>
+
+    <!-- === Modules === -->
+    <modules>
+        <module>ingestion-service</module>
+        <module>match-engine</module>
+        <module>report-service</module>
+        <module>exception-api</module>
+        <module>scheduler</module>
+        <module>monitor-metrics</module>
+    </modules>
+
+    <!-- === Properties (Centralizes all critical versions) === -->
+    <properties>
+        <!-- Java version for all modules (uses Java 21, LTS) -->
+        <java.version>21</java.version>
+        <!-- Centralized Spring Boot version -->
+        <spring.boot.version>3.2.6</spring.boot.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+    </properties>
+
+    <!-- === Dependency Management (ensures consistent lib versions) === -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Import Spring Boot BOM for version alignment -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Add other managed deps (Kafka, Flyway, etc) here if needed -->
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- === Build Plugins (ensures all modules build the same way) === -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Spring Boot Plugin for packaging & running -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring.boot.version}</version>
+                </plugin>
+                <!-- Maven Compiler Plugin (Java 21) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.11.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+                <!-- Surefire for unit tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <!-- === Repositories (only Maven Central, restricts to trusted sources) === -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+</project>

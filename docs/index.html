@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <title>Recon-Engine Data-Flow Map</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms&darkMode=class"></script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors">
+  <header class="flex flex-wrap justify-between items-center p-4 bg-white dark:bg-gray-800 shadow">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Recon-Engine Data-Flow Map</h1>
+    <div class="flex items-center space-x-4">
+      <label class="flex items-center text-gray-700 dark:text-gray-300">
+        <input type="checkbox" id="highlightToggle" class="form-checkbox mr-1"/>Highlight
+      </label>
+      <button id="darkToggle" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded">
+        Toggle Dark
+      </button>
+    </div>
+  </header>
+
+  <main class="relative mx-auto max-w-5xl p-4">
+    <div id="diagram" class="relative flex flex-col sm:flex-row items-center justify-between h-64 sm:h-48">
+      <svg id="svg" class="absolute inset-0 w-full h-full pointer-events-none"></svg>
+    </div>
+  </main>
+
+  <aside id="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle"
+         class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-lg transform -translate-x-full transition-transform overflow-auto">
+    <button id="close" class="m-4 text-gray-700 dark:text-gray-300">Close ×</button>
+    <div id="detail" class="p-4 text-gray-900 dark:text-gray-100"></div>
+  </aside>
+
+  <script type="application/json" id="spec">
+    {
+      "order":["ext","ingest","match","sched","report","exc","mon"],
+      "components":{
+        "ext":{"name":"External Sources","metaphor":"Inbound Truck Fleet"},
+        "ingest":{"name":"Ingestion Service","metaphor":"Sanitising Bay"},
+        "match":{"name":"Match Engine","metaphor":"Shelving Robots"},
+        "sched":{"name":"Scheduler","metaphor":"Foreman’s Alarm"},
+        "report":{"name":"Report Service","metaphor":"Dispatch Office"},
+        "exc":{"name":"Exception API","metaphor":"Review Workbench"},
+        "mon":{"name":"Monitor & Metrics","metaphor":"Control Room"}
+      },
+      "flows":[
+        {"from":"ext","to":"ingest","label":"bank/scheme topics"},
+        {"from":"ingest","to":"match","label":"ingested-txn"},
+        {"from":"match","to":"sched","label":"POST /api/batches/start"},
+        {"from":"match","to":"report","label":"match_results"},
+        {"from":"report","to":"exc","label":"exception_tickets"},
+        {"from":"exc","to":"mon","label":"/metrics scrape"}
+      ]
+    }
+  </script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const spec = JSON.parse(document.getElementById('spec').textContent);
+    const container = document.getElementById('diagram');
+    const svg = document.getElementById('svg');
+    const panel = document.getElementById('panel');
+    const detail = document.getElementById('detail');
+    const highlightToggle = document.getElementById('highlightToggle');
+    const darkToggle = document.getElementById('darkToggle');
+    const closeBtn = document.getElementById('close');
+
+    function draw() {
+      container.querySelectorAll('.box').forEach(el => el.remove());
+      svg.innerHTML = `
+        <defs>
+          <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="#4B5563"/>
+          </marker>
+        </defs>`;
+      // create boxes
+      spec.order.forEach(id => {
+        const {name, metaphor} = spec.components[id];
+        const box = document.createElement('div');
+        box.dataset.id = id;
+        box.setAttribute('role','button');
+        box.setAttribute('tabindex','0');
+        box.setAttribute('aria-label', name);
+        box.className = 'box p-3 bg-white dark:bg-gray-800 rounded shadow text-center cursor-pointer m-2 flex-1';
+        box.innerHTML = `<strong>${name}</strong><br><em>${metaphor}</em>`;
+        box.addEventListener('click', ()=>openPanel(name, metaphor));
+        box.addEventListener('keypress', e=> e.key==='Enter' && openPanel(name, metaphor));
+        container.appendChild(box);
+      });
+      // draw flows
+      spec.flows.forEach(({from,to,label})=>{
+        const a = document.querySelector(`[data-id="${from}"]`).getBoundingClientRect();
+        const b = document.querySelector(`[data-id="${to}"]`).getBoundingClientRect();
+        const r = container.getBoundingClientRect();
+        const x1 = a.left + a.width/2 - r.left;
+        const y1 = a.bottom - r.top;
+        const x2 = b.left + b.width/2 - r.left;
+        const y2 = b.top - r.top;
+        const path = document.createElementNS(svg.namespaceURI,'path');
+        path.setAttribute('d',`M${x1},${y1} L${x2},${y2}`);
+        path.setAttribute('stroke','#4B5563');
+        path.setAttribute('stroke-width','2');
+        path.setAttribute('fill','none');
+        path.setAttribute('marker-end','url(#arrow)');
+        svg.appendChild(path);
+        const text = document.createElementNS(svg.namespaceURI,'text');
+        text.textContent = label;
+        text.setAttribute('x',(x1+x2)/2);
+        text.setAttribute('y',(y1+y2)/2 - 6);
+        text.setAttribute('fill','#374151');
+        text.setAttribute('font-size','12');
+        svg.appendChild(text);
+      });
+      svg.classList.toggle('highlight', highlightToggle.checked);
+    }
+
+    function openPanel(name, metaphor) {
+      detail.innerHTML = `<h2 id="panelTitle" class="font-bold text-lg">${name}</h2>
+                          <p class="italic">${metaphor}</p>`;
+      panel.classList.remove('-translate-x-full');
+    }
+
+    window.addEventListener('resize', draw);
+    closeBtn.onclick = () => panel.classList.add('-translate-x-full');
+    darkToggle.onclick = () => document.documentElement.classList.toggle('dark');
+    highlightToggle.onchange = draw;
+
+    draw();
+  });
+  </script>
+</body>
+</html>

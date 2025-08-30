@@ -1,0 +1,76 @@
+# ─────────────────────────────────────────────────────────
+# Recon Engine — Global .gitignore for Multi-Module Maven
+# Place this at repo root (recon-engine/.gitignore)
+# ─────────────────────────────────────────────────────────
+
+# Maven output
+target/
+**/target/
+
+# Logs and temp files
+logs/
+*.log
+*.tmp
+*.out
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Java class files
+*.class
+
+# IntelliJ/VS Code/NetBeans
+*.iws
+*.ipr
+*.bak
+*.swp
+*.swo
+*.orig
+
+# Test coverage/output
+coverage/
+**/coverage/
+jacoco.exec
+
+# System files
+*.sublime-workspace
+*.sublime-project
+
+# MacOS
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows
+$RECYCLE.BIN/
+*.lnk
+*.db
+
+
+# Environment/config (optional, uncomment as needed)
+ .env
+# application-local.properties
+application-dev.properties
+match-engine/src/main/resources/application.yml
+
+# Ignore dependency downloads
+**/.classpath
+**/.project
+**/.settings
+
+# Node/npm/yarn (if ever used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─────────────────────────────────────────────────────────
+# Add any custom or module-specific ignores below as needed
+# ─────────────────────────────────────────────────────────
+tools/akhq-0.25.1-all.jar

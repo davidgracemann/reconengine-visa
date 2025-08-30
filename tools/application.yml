@@ -1,0 +1,11 @@
+micronaut:
+    server:
+        port: 8081
+
+akhq:
+    connections:
+        kafka-local:
+            properties:
+                bootstrap.servers: localhost:9092
+            security:
+                enabled: false

@@ -1,0 +1,250 @@
+package com.gracemann.recon.matchengine.domain;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+/**
+ * JPA entity representing a normalized transaction record from the scheme
+ * settlement ledger.
+ * <p>
+ * This entity is used to persist transaction data ingested from scheme
+ * settlement files,
+ * providing a canonical form for downstream reconciliation and matching
+ * processes.
+ * </p>
+ *
+ * <p>
+ * <b>Table:</b> scheme_settlement_transaction_ledger
+ * </p>
+ *
+ * <p>
+ * <b>Fields:</b>
+ * <ul>
+ * <li><b>txnId</b>: Unique transaction identifier from the scheme (Primary
+ * Key).</li>
+ * <li><b>cardNumber</b>: Masked primary account number (PAN).</li>
+ * <li><b>amount</b>: Settlement amount (decimal, 2 places).</li>
+ * <li><b>txnTimestamp</b>: Date and time of the settlement as recorded by the
+ * scheme.</li>
+ * <li><b>currency</b>: ISO 4217 currency code (e.g., 'INR').</li>
+ * <li><b>merchantId</b>: Optional merchant/acquirer identifier.</li>
+ * <li><b>terminalId</b>: Optional terminal or device identifier.</li>
+ * <li><b>responseCode</b>: Scheme/clearing response code.</li>
+ * <li><b>batchId</b>: Scheme batch/file ID.</li>
+ * <li><b>schemeName</b>: Scheme name (e.g., Visa, MasterCard).</li>
+ * <li><b>recordCreatedTimestamp</b>: Timestamp when the record was
+ * created.</li>
+ * <li><b>rawSourceRecord</b>: Raw source record for trace/debug purposes.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * <b>Usage:</b> This entity is managed by JPA/Hibernate and should not contain
+ * business logic.
+ * </p>
+ *
+ * @author [Your Name]
+ * @since 1.0
+ */
+@Entity
+@Table(name = "scheme_settlement_transaction_ledger")
+public class SchemeSettlementTransactionLedger {
+
+    @Id
+    @Column(name = "transaction_id", nullable = false, unique = true, length = 50)
+    private String txnId; // Transaction ID from scheme (should be unique)
+
+    @Column(name = "settlement_amount", nullable = false, precision = 18, scale = 2)
+    private BigDecimal amount; // Settlement amount
+
+    @Column(name = "transaction_timestamp", nullable = false)
+    private LocalDateTime txnTimestamp; // Settlement timestamp
+
+    @Column(name = "currency_code", nullable = false, length = 3)
+    private String currency; // ISO 4217 currency code
+
+    @Column(name = "merchant_identifier", length = 50)
+    private String merchantId; // Optional: Merchant/acquirer ID
+
+    @Column(name = "masked_card_number", nullable = false, length = 20)
+    private String cardNumber; // Masked PAN
+
+    @Column(name = "terminal_identifier", length = 50)
+    private String terminalId; // Optional: Terminal/device ID
+
+    @Column(name = "scheme_response_code", length = 10)
+    private String responseCode; // Scheme/clearing response code
+
+    @Column(name = "scheme_settlement_batch_id", length = 50)
+    private String batchId; // Scheme batch/file ID
+
+    @Column(name = "card_scheme_name", nullable = false, length = 20)
+    private String schemeName; // Visa/MasterCard/etc.
+
+    @Column(name = "record_created_timestamp")
+    private LocalDateTime recordCreatedTimestamp; // Record creation timestamp
+
+    @Column(name = "raw_settlement_record", columnDefinition = "text")
+    private String rawSourceRecord; // For trace/debug
+
+    // Constructors, getters, setters
+
+    public SchemeSettlementTransactionLedger() {
+    }
+
+    public SchemeSettlementTransactionLedger(
+            String txnId,
+            String cardNumber,
+            BigDecimal amount,
+            LocalDateTime txnTimestamp,
+            String currency,
+            String merchantId,
+            String terminalId,
+            String responseCode,
+            String batchId,
+            String schemeName,
+            String rawSourceRecord) {
+        this.txnId = txnId;
+        this.cardNumber = cardNumber;
+        this.amount = amount;
+        this.txnTimestamp = txnTimestamp;
+        this.currency = currency;
+        this.merchantId = merchantId;
+        this.terminalId = terminalId;
+        this.responseCode = responseCode;
+        this.batchId = batchId;
+        this.schemeName = schemeName;
+        this.rawSourceRecord = rawSourceRecord;
+    }
+
+    public String getTxnId() {
+        return txnId;
+    }
+
+    public void setTxnId(String txnId) {
+        this.txnId = txnId;
+    }
+
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public LocalDateTime getTxnTimestamp() {
+        return txnTimestamp;
+    }
+
+    public void setTxnTimestamp(LocalDateTime txnTimestamp) {
+        this.txnTimestamp = txnTimestamp;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public String getTerminalId() {
+        return terminalId;
+    }
+
+    public void setTerminalId(String terminalId) {
+        this.terminalId = terminalId;
+    }
+
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
+    }
+
+    public String getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
+    }
+
+    public String getSchemeName() {
+        return schemeName;
+    }
+
+    public void setSchemeName(String schemeName) {
+        this.schemeName = schemeName;
+    }
+
+    public LocalDateTime getRecordCreatedTimestamp() {
+        return recordCreatedTimestamp;
+    }
+
+    public void setRecordCreatedTimestamp(LocalDateTime recordCreatedTimestamp) {
+        this.recordCreatedTimestamp = recordCreatedTimestamp;
+    }
+
+    public String getRawSourceRecord() {
+        return rawSourceRecord;
+    }
+
+    public void setRawSourceRecord(String rawSourceRecord) {
+        this.rawSourceRecord = rawSourceRecord;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        SchemeSettlementTransactionLedger that = (SchemeSettlementTransactionLedger) o;
+        return txnId != null && txnId.equals(that.txnId);
+    }
+
+    @Override
+    public int hashCode() {
+        return txnId != null ? txnId.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "SchemeSettlementTransactionLedger{" +
+                "txnId='" + txnId + '\'' +
+                ", cardNumber='" + cardNumber + '\'' +
+                ", amount=" + amount +
+                ", txnTimestamp=" + txnTimestamp +
+                ", currency='" + currency + '\'' +
+                ", merchantId='" + merchantId + '\'' +
+                ", terminalId='" + terminalId + '\'' +
+                ", responseCode='" + responseCode + '\'' +
+                ", batchId='" + batchId + '\'' +
+                ", schemeName='" + schemeName + '\'' +
+                ", recordCreatedTimestamp=" + recordCreatedTimestamp +
+                ", rawSourceRecord='" + rawSourceRecord + '\'' +
+                '}';
+    }
+
+}
