@@ -1,18 +1,8 @@
 # [UPDATE] : match-engine : Online  ✅
 
-The ingestion engine is now fully implemented with the following features:
+> The Match & ingestion engine is now fully implemented with the following features:
 
-* Consumes raw bank and scheme transaction messages from Kafka topics
-* Normalizes and validates transaction data using JSR-380 annotations
-* Implements deduplication logic to filter out duplicate transactions
-* Forwards clean, validated, and unique transactions to the `ingested-txn-topic`
-* Includes a test producer utility to simulate raw ISO and CSV messages
-* Logs processing metrics and errors for observability
-
-This completes the core ingestion pipeline, providing a reliable, production-ready data intake foundation for downstream matching and reconciliation.
-
-Next steps: Integrate the match engine to consume from the ingested topic and perform reconciliation.
-## Upcoming : 
+## Pre-Production ( Testing & Integration  ) 
 ### Reporting & Exception API
 ### Monitoring 
 ### Hardening Of Security & NFR
